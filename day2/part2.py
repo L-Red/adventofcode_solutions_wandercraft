@@ -5,10 +5,14 @@ def get_range(range):
 
 def get_divisors(nr):
     divs = []
-    for i in range(1, nr):
+    for i in range(1, int(nr**0.5) + 1): # we only need to find divisors up until sqrt(nr)
         if nr % i == 0:
             divs.append(i)
-    return divs
+            if i != nr // i and nr // i != nr:
+                divs.append(nr // i)
+    if nr in divs:
+        divs.remove(nr)
+    return sorted(divs)
 
 def is_repetition(number, divisors):
     st = str(number)
