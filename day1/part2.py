@@ -27,7 +27,7 @@ if __name__ == '__main__':
     for rotation in input:
         position, clicks = apply_rotation(position, rotation)
         if clicks > 0:
-            print("At rotation", rotation, "position", position, "clicks", clicks)
+            # print("At rotation", rotation, "position", position, "clicks", clicks)
             total += clicks
 
     # print total

@@ -1,3 +1,5 @@
+from collections import deque
+
 def convolution2d(array):
     filter = [[1, 1, 1], [1, 0, 1], [1, 1, 1]]
     sum = 0;
@@ -23,6 +25,42 @@ def convolution2d(array):
 def print_2d_array(array):
     for line in array:
         print(line)
+
+def solve(forklifts, summed):
+    
+    m = len(forklifts)
+    n = len(forklifts[0])
+
+    final_sum = 0
+
+    queue = deque()
+    for i in range(m):
+        for j in range(n):
+            if forklifts[i][j] == 1 and summed[i][j] < 4:
+                queue.append((i, j))
+
+    neighbours = [(0,1), (0,-1), (1,0), (-1,0), (1,1), (1,-1), (-1,1), (-1,-1)]
+
+    while queue:
+        i, j = queue.popleft()
+
+        if forklifts[i][j] == 0:
+            continue
+
+        if summed[i][j] >= 4:
+            continue
+
+        final_sum += 1
+        forklifts[i][j] = 0
+
+        for di, dj in neighbours:
+            ni, nj = i + di, j + dj
+            if 0 <= ni < m and 0 <= nj < n and forklifts[ni][nj] == 1:
+                summed[ni][nj] -= 1
+                if summed[ni][nj] < 4:
+                    queue.append((ni, nj))
+
+    return final_sum
     
     
 
@@ -39,52 +77,5 @@ if __name__ == '__main__':
     forklifts = [list(map(lambda x: 1 if x == '@' else 0, l)) for l in input]
 
     summed = convolution2d(forklifts)
-
-    m = len(forklifts)
-    n = len(forklifts[0])
-
-    pot = [[0 for _ in range(n)] for _ in range(m)]
-
-    final_sum = 0
-
-    changed = True
-
-    while(changed): # when nothing in the array changes, stop
-        changed = False
-
-        for i in range(len(summed)):
-            for j in range(len(summed[0])):
-                neighbour_array = [] # check possible neighbours neighbourhood
-                if i>0:
-                    neighbour_array.append((-1,0))
-                if j>0:
-                    neighbour_array.append((0,-1))
-                if i>0 and j>0:
-                    neighbour_array.append((-1,-1))
-                if i<m-1:
-                    neighbour_array.append((1,0))   
-                    if j>0:
-                        neighbour_array.append((1,-1))
-                if j<n-1:
-                    neighbour_array.append((0,1))
-                    if i>0:
-                        neighbour_array.append((-1,1))
-                if i<m-1 and j<n-1:
-                    neighbour_array.append((1,1))
-
-                if forklifts[i][j] >= 1: # make sure there is a forklift
-                        if summed[i][j] < 4: # if this has less than 4 neighbour
-                            changed = True
-                            # print("Remove ", forklifts[i][j], " rolls from index ", i, j)
-                            # print("neighbour array: ", neighbour_array)
-                            final_sum += 1 # we can knock this one down
-                            forklifts[i][j] = 0
-                            summed[i][j] = 0
-                            for k,l in neighbour_array:
-                                if (k != 0 or l != 0) and forklifts[i+k][j+l] >= 1:
-                                    summed[i+k][j+l] -= 1 # remove a neighbour
-                        
-                # print("Iteration ", i*n+j)
-                # if i*n+j < 50: print_2d_array(summed)
     
-    print(final_sum)
+    print(solve(forklifts, summed))
